@@ -77,8 +77,8 @@ public class DriveConstants {
     public static final double DRIVE_Kp = 0.0; 
     public static final double DRIVE_Ki = 0.0;
     public static final double DRIVE_Kd = 0.0; 
-    public static final double DRIVE_Ks = 0.0; 
-    public static final double DRIVE_Kv = 0.0; 
+    public static final double DRIVE_Ks = 0.043; 
+    public static final double DRIVE_Kv = 0.0198; 
     public static final InvertedValue DRIVE_MOTOR_INVERT = InvertedValue.CounterClockwise_Positive; 
     public static final NeutralModeValue DRIVE_NEUTRAL_MODE = NeutralModeValue.Coast;
     public static final boolean DRIVE_ENABLE_CURRENT_LIMIT = true;  
@@ -88,7 +88,7 @@ public class DriveConstants {
     public static final double RAMP = 0.0; 
     
     //Angle config
-    public static final double ANGLE_Kp = 0.0; 
+    public static final double ANGLE_Kp = 2.0; 
     public static final double ANGLE_Ki = 0.0; 
     public static final double ANGLE_Kd = 0.0; 
     public static final InvertedValue ANGLE_MOTOR_INVERT = InvertedValue.CounterClockwise_Positive; 
