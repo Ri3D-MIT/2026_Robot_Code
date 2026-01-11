@@ -1,10 +1,10 @@
 package frc.lib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static frc.lib.UnitTestingUtil.reset;
 import static frc.lib.UnitTestingUtil.runToCompletion;
 import static frc.lib.UnitTestingUtil.setupTests;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
