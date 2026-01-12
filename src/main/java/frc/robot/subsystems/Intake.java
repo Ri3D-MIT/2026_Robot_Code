@@ -16,14 +16,38 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase{
-    // Adjust motor IDs
-    private int kIntakeID = 35;
-    private int kPivotID = 36;
+    // TalonFX Motor IDs
+    private final int kIntakeID = 35;
+    private final int kPivotID = 36;
 
+    // Current Limits
+    private final int kIntakeCurrentLimit = 15;
+    private final int kPivotCurrentLimit = 10;
+    
+    // Limit switch channels
+    private int kPivotLimitSwitchChannel = 0;
+
+
+
+    // Kraken X60 that controls intake mechanism.
+    private TalonFX intakeMotor;
+    private TalonFXConfiguration intakeConfig;
+
+    // Kraken X60 controls adjustment mechanism. Compatible with CANivore.
+    private TalonFX pivotMotor;
+    private TalonFXConfiguration pivotConfig;
+
+    // Create limit switch object
+    private DigitalInput pivotLimitSwitch;
+
+    // Booleans
+    private boolean reachedMinPivot = false;
+    private boolean reachedMaxPivot = false;
 
     /* No longer using SparkMAX.
     // SparkMAX configuration
@@ -31,16 +55,6 @@ public class Intake extends SubsystemBase{
     private SparkMax intakeMotor;
     private SparkMaxConfig intakeConfig;
     */
-
-    // Kraken X60 that controls intake mechanism.
-    private TalonFX intakeMotor;
-    private TalonFXConfiguration intakeConfig;
-    private int kIntakeCurrentLimit = 15;
-
-    // Kraken X60 controls adjustment mechanism. Compatible with CANivore.
-    private TalonFX pivotMotor;
-    private TalonFXConfiguration pivotConfig;
-    private int kPivotCurrentLimit = 10;
 
     public Intake() {
         /* No longer using SparkMAX
@@ -83,6 +97,9 @@ public class Intake extends SubsystemBase{
 
         // Apply configurations to TalonFX
         pivotMotor.getConfigurator().apply(pivotConfig);
+
+        // Create limit switch reference
+        pivotLimitSwitch = new DigitalInput(kPivotLimitSwitchChannel);
     }
 
     // Stop both motors

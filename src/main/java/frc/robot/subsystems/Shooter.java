@@ -13,20 +13,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-    private final int kTopMotorID = 31;
+    private final int kTopID = 31;
     private final int kBottomID = 32;
 
     private final int kShooterCurrentLimit = 30;
 
-    private final TalonFX talonFX1;
-    private final TalonFX talonFX2;
+    private final TalonFX upperMotor;
+    private final TalonFX lowerMotor;
 
     private final TalonFXConfiguration config1;
 
 
      public Shooter() {
-        this.talonFX1 = new TalonFX(kTopMotorID);
-        this.talonFX2 = new TalonFX(kBottomID);
+        this.upperMotor = new TalonFX(kTopID);
+        this.lowerMotor = new TalonFX(kBottomID);
         this.config1 = new TalonFXConfiguration();
         config1.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
         config1.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -34,35 +34,35 @@ public class Shooter extends SubsystemBase {
 
         config1.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config1.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        talonFX1.getConfigurator().apply(config1);
-        talonFX2.getConfigurator().apply(config1);
+        upperMotor.getConfigurator().apply(config1);
+        lowerMotor.getConfigurator().apply(config1);
 
 
         // should in theory force the lower motor to follow the top motor?
-        talonFX2.setControl(new Follower(kBottomID, MotorAlignmentValue.Opposed));
-
+        lowerMotor.setControl(new Follower(kBottomID, MotorAlignmentValue.Opposed));
+        
     }
 
-    public void setVoltageLeft(double voltage) {
-        talonFX1.setVoltage(voltage);
-        // talonFX2.setVoltage(-voltage);
+    public void stopMotors() {
+        upperMotor.stopMotor();
+        lowerMotor.stopMotor();
+    }
+    
+    public void setShooterVoltage(double voltage) {
+        upperMotor.setVoltage(voltage);
+        // lowerMotor.setVoltage(-voltage);
     }
 
     public void setVoltageRight(double voltage) {
-        // talonFX2.setVoltage(voltage);
+        // lowerMotor.setVoltage(voltage);
     }
 
-    public Command runVoltageLeft(double voltage) {
-        return this.runEnd(() -> setVoltageLeft(voltage), () -> stop());
+    public Command runShooter(double voltage) {
+        return this.runEnd(() -> setShooterVoltage(voltage), () -> stopMotors());
     }
 
     public Command runVoltageRight(double voltage) {
-        return this.runEnd(() -> setVoltageRight(voltage), () -> stop());
-    }
-
-    public void stop() {
-        talonFX1.stopMotor();
-        talonFX2.stopMotor();
+        return this.runEnd(() -> setVoltageRight(voltage), () -> stopMotors());
     }
 
 }

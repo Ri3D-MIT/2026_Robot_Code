@@ -37,6 +37,8 @@ public class RobotContainer {
 
     public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
     public final Shooter shooter = new Shooter();
+    public final Elevator elevator = new Elevator();
+    public final Intake intake = new Intake();
 
     public RobotContainer() {
         configureBindings();
@@ -76,8 +78,13 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.x().whileTrue(shooter.runVoltageLeft(10));
-        joystick.y().whileTrue(shooter.runVoltageRight(-10));
+        // Two options for preference: pick if trigger or Y preferred
+        joystick.leftTrigger().whileTrue(intake.intakeFuelPiece(4));
+        joystick.y().whileTrue(intake.intakeFuelPiece(4));
+
+        joystick.x().whileTrue(shooter.runShooter(4));
+
+        // joystick.y().whileTrue(shooter.runVoltageRight(-4));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
