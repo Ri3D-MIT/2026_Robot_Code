@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.ShooterPrototype;
+import frc.robot.subsystems.*;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -36,7 +36,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
-    public final ShooterPrototype shooter = new ShooterPrototype();
+    public final Shooter shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
