@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -9,20 +9,24 @@ import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterPrototype extends SubsystemBase {
+public class Shooter extends SubsystemBase {
+
+    private final int kTopMotorID = 31;
+    private final int kBottomID = 32;
+
+    private final int kShooterCurrentLimit = 30;
 
     private final TalonFX talonFX1;
     private final TalonFX talonFX2;
 
     private final TalonFXConfiguration config1;
 
-    private final CANBus canbus = new CANBus("Drivetrain");
 
-     public ShooterPrototype() {
-        this.talonFX1 = new TalonFX(31, canbus);
-        this.talonFX2 = new TalonFX(32, canbus);
+     public Shooter(CANBus canbus) {
+        this.talonFX1 = new TalonFX(kTopMotorID, canbus);
+        this.talonFX2 = new TalonFX(kBottomID, canbus);
         this.config1 = new TalonFXConfiguration();
-        config1.CurrentLimits.SupplyCurrentLimit = 30;
+        config1.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
         config1.CurrentLimits.SupplyCurrentLimitEnable = true;
 
 
