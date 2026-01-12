@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.controls.Follower;
+// import com.ctre.phoenix6.CANBus;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,9 +24,9 @@ public class Shooter extends SubsystemBase {
     private final TalonFXConfiguration config1;
 
 
-     public Shooter(CANBus canbus) {
-        this.talonFX1 = new TalonFX(kTopMotorID, canbus);
-        this.talonFX2 = new TalonFX(kBottomID, canbus);
+     public Shooter() {
+        this.talonFX1 = new TalonFX(kTopMotorID);
+        this.talonFX2 = new TalonFX(kBottomID);
         this.config1 = new TalonFXConfiguration();
         config1.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
         config1.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -34,15 +36,20 @@ public class Shooter extends SubsystemBase {
         config1.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         talonFX1.getConfigurator().apply(config1);
         talonFX2.getConfigurator().apply(config1);
+
+
+        // should in theory force the lower motor to follow the top motor?
+        talonFX2.setControl(new Follower(kBottomID, MotorAlignmentValue.Opposed));
+
     }
 
     public void setVoltageLeft(double voltage) {
         talonFX1.setVoltage(voltage);
-        talonFX2.setVoltage(-voltage);
+        // talonFX2.setVoltage(-voltage);
     }
 
     public void setVoltageRight(double voltage) {
-        talonFX2.setVoltage(voltage);
+        // talonFX2.setVoltage(voltage);
     }
 
     public Command runVoltageLeft(double voltage) {
