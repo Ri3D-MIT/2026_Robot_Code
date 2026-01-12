@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.Ports;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -194,7 +193,6 @@ public final class FaultLogger {
                 : Optional.empty());
   }
 
-
   /**
    * Registers fault suppliers for a duty cycle encoder.
    *
@@ -207,7 +205,6 @@ public final class FaultLogger {
         "disconnected",
         FaultType.ERROR);
   }
-
 
   /**
    * Registers fault suppliers for a power distribution hub/panel.
@@ -260,7 +257,6 @@ public final class FaultLogger {
         "Device supply voltage dropped to near brownout levels.",
         FaultType.WARNING);
   }
-
 
   /**
    * Registers fault suppliers for a talon.
@@ -331,7 +327,6 @@ public final class FaultLogger {
         talon.getFault_UsingFusedCANcoderWhileUnlicensed(),
         "Using Fused CANcoder feature while unlicensed. Device has fallen back to remote CANcoder.");
   }
-
 
   /**
    * Returns an array of descriptions of all faults that match the specified type.
