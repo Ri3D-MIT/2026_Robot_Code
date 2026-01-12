@@ -19,6 +19,8 @@ public class UnitTestingUtil {
     DriverStationSim.setEnabled(true);
     DriverStationSim.setTest(true);
     DriverStationSim.notifyNewData();
+    FaultLogger.clear();
+    FaultLogger.unregisterAll();
     SimHooks.restartTiming();
   }
 
