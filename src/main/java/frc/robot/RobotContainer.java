@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.swerve.SwerveDrive;
-import frc.robot.subsystems.swerve.Test;
+import frc.robot.subsystems.swerve.ShooterPrototype;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -36,7 +36,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
-    public final Test test = new Test();
+    public final ShooterPrototype shooter = new ShooterPrototype();
 
     public RobotContainer() {
         configureBindings();
@@ -76,8 +76,8 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.x().whileTrue(test.runVoltageLeft(10));
-        joystick.y().whileTrue(test.runVoltageRight(-10));
+        joystick.x().whileTrue(shooter.runVoltageLeft(10));
+        joystick.y().whileTrue(shooter.runVoltageRight(-10));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

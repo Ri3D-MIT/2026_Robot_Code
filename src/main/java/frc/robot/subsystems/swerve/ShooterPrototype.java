@@ -9,7 +9,7 @@ import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Test extends SubsystemBase {
+public class ShooterPrototype extends SubsystemBase {
 
     private final TalonFX talonFX1;
     private final TalonFX talonFX2;
@@ -18,7 +18,7 @@ public class Test extends SubsystemBase {
 
     private final CANBus canbus = new CANBus("Drivetrain");
 
-     public Test() {
+     public ShooterPrototype() {
         this.talonFX1 = new TalonFX(31, canbus);
         this.talonFX2 = new TalonFX(32, canbus);
         this.config1 = new TalonFXConfiguration();
