@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.swerve.SwerveDrive;
 
 public class RobotContainer {
   private double MaxSpeed =
@@ -39,10 +39,10 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
-    public final Shooter shooter = new Shooter();
-    public final Elevator elevator = new Elevator();
-    public final Intake intake = new Intake();
+  public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
+  public final Shooter shooter = new Shooter();
+  public final Elevator elevator = new Elevator();
+  public final Intake intake = new Intake();
 
   public RobotContainer() {
     configureBindings();
@@ -89,13 +89,13 @@ public class RobotContainer {
     // Reset the field-centric heading on left bumper press.
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        // Two options for preference: pick if trigger or Y preferred
-        joystick.leftTrigger().whileTrue(intake.intakeFuelPiece(4));
-        joystick.y().whileTrue(intake.intakeFuelPiece(4));
+    // Two options for preference: pick if trigger or Y preferred
+    joystick.leftTrigger().whileTrue(intake.intakeFuelPiece(4));
+    joystick.y().whileTrue(intake.intakeFuelPiece(4));
 
-        joystick.x().whileTrue(shooter.runShooter(4));
+    joystick.x().whileTrue(shooter.runShooter(4));
 
-        // joystick.y().whileTrue(shooter.runVoltageRight(-4));
+    // joystick.y().whileTrue(shooter.runVoltageRight(-4));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
