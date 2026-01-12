@@ -39,7 +39,6 @@ public class Elevator extends SubsystemBase {
     // Set secondary motor as follower; should rotate opposed to primary motor
     elevatorSecondary.setControl(new Follower(kElevatorPrimaryID, MotorAlignmentValue.Opposed));
   }
-
   public void setElevatorVoltage(double voltage) {
     elevatorPrimary.setVoltage(voltage);
   }

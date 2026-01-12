@@ -93,7 +93,7 @@ public class RobotContainer {
     joystick.leftTrigger().whileTrue(intake.intakeFuelPiece(4));
     joystick.y().whileTrue(intake.intakeFuelPiece(4));
 
-    joystick.x().whileTrue(shooter.runShooter(4));
+    // joystick.povUp().onTrue()
 
     // joystick.y().whileTrue(shooter.runVoltageRight(-4));
 
