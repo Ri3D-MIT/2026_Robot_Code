@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -26,7 +27,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Assertion;
 import frc.lib.Assertion.EqualityAssertion;
 import frc.lib.FaultLogger;
@@ -115,6 +118,11 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
             MAX_EXTENSION.in(Meters),
             true,
             0);
+    
+    setDefaultCommand(stop());
+
+    new Trigger(() -> (position() <= kTolerance) || (position() >= MAX_EXTENSION.in(Meters)))
+      .onTrue(stop());
   }
 
   public void setElevatorVoltage(double voltage) {
@@ -162,6 +170,10 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     EqualityAssertion atGoal =
         Assertion.eAssert("elevator height", () -> height.in(Meters), this::position, kTolerance);
     return new Test(testCommand, Set.of(atGoal));
+  }
+
+  public Command stop() {
+    return Commands.runOnce(() -> setElevatorVoltage(0)).andThen(idle());
   }
 
   @Override
