@@ -32,4 +32,9 @@ public class ElevatorTest {
   void goToTest(double heightInches) {
     frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(heightInches)));
   }
+
+  void extensionTest() {
+    frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(25)));
+    frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(0)));
+  }
 }

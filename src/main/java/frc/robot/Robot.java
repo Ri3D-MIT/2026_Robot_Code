@@ -4,20 +4,29 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.*;
 
 import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
+import frc.lib.Test;
+import frc.robot.subsystems.Elevator;
 
 @Logged
 public class Robot extends CommandRobot {
   /* log and replay timestamp and joystick data */
   private final HootAutoReplay m_timeAndJoystickReplay =
       new HootAutoReplay().withTimestampReplay().withJoystickReplay();
+
+  private final CommandXboxController joystick = new CommandXboxController(0);
+
+  @Logged private final Elevator elevator = new Elevator();
 
   public Robot() {
     super(0.02);
@@ -30,7 +39,14 @@ public class Robot extends CommandRobot {
     Epilogue.bind(this);
   }
 
-  public void configureBindings() {}
+  public void configureBindings() {
+    joystick.rightTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(2)));
+    joystick.leftTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(-2)));
+
+    test()
+        .whileTrue(
+            Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
+  }
 
   @Override
   public void robotPeriodic() {

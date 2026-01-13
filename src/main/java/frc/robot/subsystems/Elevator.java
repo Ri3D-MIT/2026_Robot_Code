@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -122,6 +123,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /** position meters */
+  @Logged
   public double position() {
     return Robot.isReal()
         ? leader.getPosition().getValueAsDouble()
