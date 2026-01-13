@@ -11,8 +11,7 @@ public final class Ports {
       entry(Intake.PIVOT_MOTOR, "pivot motor"));
 
   public static final class Intake {
-      public static final int INTAKE_MOTOR = 00;
-      public static final int PIVOT_MOTOR = 01;
-  }
-  
+      public static final int INTAKE_MOTOR = 35;
+      public static final int PIVOT_MOTOR = 36;
+  } 
 }

@@ -1,14 +1,7 @@
 // intake skeleton code
 package frc.robot.subsystems;
 
-/*
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.ResetMode;
-import com.revrobotics.PersistMode;
-*/
+import static frc.robot.Ports.Intake.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,12 +13,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.FaultLogger;
 
 public class Intake extends SubsystemBase {
-  // TalonFX Motor IDs
-  private final int kIntakeID = 35;
-  private final int kPivotID = 36;
-
   // Current Limits
   private final int kIntakeCurrentLimit = 15;
   private final int kPivotCurrentLimit = 10;
@@ -34,18 +24,19 @@ public class Intake extends SubsystemBase {
   private int kPivotLimitSwitchChannel = 0;
 
   // TODO: Determine and set constraints for intake motors and pivot
-  // Feedforward mechanism for intake motors
-  private final double kS_intake = 0;
-  private final double kV_intake = 0;
-  private final double kA_intake = 0;
-
-  private final SimpleMotorFeedforward ffIntake = new SimpleMotorFeedforward(kS_intake, kV_intake,  kA_intake);
-
   // Configure PID for intake motors
   private final double kP_intake = 0;
   private final double kD_intake = 0;
 
   private final PIDController pidIntake = new PIDController(kP_intake, 0, kD_intake) ;
+
+
+  // Feedforward mechanism for intake pivot
+  private final double kS_pivot = 0;
+  private final double kV_pivot = 0;
+  private final double kA_pivot = 0;
+
+  private final SimpleMotorFeedforward ffPivot = new SimpleMotorFeedforward(kS_pivot, kV_pivot,  kA_pivot);
 
   // Configure PID for Intake pivot
   private final double kP_pivot = 0;
@@ -69,7 +60,9 @@ public class Intake extends SubsystemBase {
   private DigitalInput pivotLimitSwitch;
 
   // Booleans
+  // TODO: if two limit switches are to be installed, integrate minimium pivot code
   private boolean reachedMinPivot = false;
+
   private boolean reachedMaxPivot = false;
 
   /* No longer using SparkMAX.
@@ -96,7 +89,7 @@ public class Intake extends SubsystemBase {
     */
 
     // Create TalonFX object and configuration for intake motor
-    this.intakeMotor = new TalonFX(kIntakeID);
+    this.intakeMotor = new TalonFX(INTAKE_MOTOR);
     this.intakeConfig = new TalonFXConfiguration();
 
     // Set current limit for the intake TalonFX motor controller
@@ -107,7 +100,7 @@ public class Intake extends SubsystemBase {
     intakeConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     // Create TalonFX object, configurations
-    this.pivotMotor = new TalonFX(kPivotID);
+    this.pivotMotor = new TalonFX(PIVOT_MOTOR);
     this.pivotConfig = new TalonFXConfiguration();
 
     // Set current limit for the pivot TalonFX motor controller
@@ -123,6 +116,14 @@ public class Intake extends SubsystemBase {
 
     // Create limit switch reference
     pivotLimitSwitch = new DigitalInput(kPivotLimitSwitchChannel);
+
+
+    // Fault Logger registering
+    FaultLogger.register(intakeMotor);
+    FaultLogger.register(pivotMotor);
+
+    pidIntake.setTolerance(kToleranceIntake);
+    pidPivot.setTolerance(kToleranceIntake);
   }
 
   // Stop both motors
@@ -133,7 +134,27 @@ public class Intake extends SubsystemBase {
 
   // Intake pivot
   public void setVoltagePivot(double voltage) {
+    
+    // stupid comparison logic. TODO: please simplify :( 
+
+    // If a limit switch is tripped on said direction, robot should not be able to pivot further than that point
+    if ((voltage < 0 && reachedMinPivot) || (voltage > 0 && reachedMaxPivot)) {
+      voltage = 0;
+    }
+
+    // If a robot moves the opposite direction, reset the limit booleans.
+    if ((voltage > 0 && reachedMinPivot)||(voltage<0&&reachedMaxPivot)) {
+      reachedMaxPivot = false;
+      reachedMinPivot = false;
+    }
+        
     this.pivotMotor.setVoltage(voltage);
+
+    // When limit switch triggered, prevent additional input on that direction only. 
+    if (pivotLimitSwitch.get() == true) {
+      reachedMaxPivot = true;
+    }
+    
   }
 
   public Command adjustIntakePivot(double voltage) {
