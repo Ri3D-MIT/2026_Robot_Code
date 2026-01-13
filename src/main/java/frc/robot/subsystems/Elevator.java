@@ -49,9 +49,12 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   private final double kS = 0;
   private final double kV = 0.1;
   private final double kA = 0;
-  private final double kG = 3;
+  private final double kG_UP = 0.05;
+  private final double kG_DOWN = -5;
 
-  private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG, kV, kA);
+  @Logged
+  private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG_UP, kV, kA);
+  private final ElevatorFeedforward ffLift = new ElevatorFeedforward(kS, kG_DOWN, kV, kA);
 
   // TODO gear ratio and mech ratio
 
@@ -72,7 +75,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
               MAX_SPEED.in(MetersPerSecond), MAX_ACCELERATION.in(MetersPerSecondPerSecond)));
 
   // TODO set constants
-  private final Distance MAX_EXTENSION = Inches.of(27);
+  private final Distance MAX_EXTENSION = Meters.of(0.444);
 
   private final Distance DRUM_RADIUS = Inches.of(0.25).times(22 / (2 * Math.PI));
 
@@ -90,11 +93,13 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     config.CurrentLimits.SupplyCurrentLimit = kElevatorCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    config.Feedback.RotorToSensorRatio = 1.0 / 20.0;
+    config.Feedback.RotorToSensorRatio = 1;
     // TODO check!!
-    config.Feedback.SensorToMechanismRatio = 1.0 / (DRUM_RADIUS.in(Meters) * 2 * Math.PI);
+    config.Feedback.SensorToMechanismRatio = 20 / (DRUM_RADIUS.in(Meters) * 2 * Math.PI * 2);
+
+    leader.setPosition(0); 
 
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
@@ -145,13 +150,17 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
         : elevatorSim.getVelocityMetersPerSecond();
   }
 
-  public void updateSetpoint(double position) {
+  public void updateSetpoint(double position, ElevatorFeedforward ffControl) {
     var lastState = pid.getSetpoint();
     double pidVoltage = pid.calculate(position(), Double.isNaN(position) ? position() : position);
     var nextState = pid.getSetpoint();
     double ffVoltage = ff.calculateWithVelocities(lastState.velocity, nextState.velocity);
 
     setElevatorVoltage(pidVoltage + ffVoltage);
+  }
+
+  public void updateSetpoint(double position) {
+    updateSetpoint(position, ff);
   }
 
   public Command goTo(DoubleSupplier extension) {
@@ -173,6 +182,10 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   public Command stop() {
     return Commands.runOnce(() -> setElevatorVoltage(0)).andThen(idle());
+  }
+
+  public Command lift() {
+    return run(() -> updateSetpoint(0, ffLift)).finallyDo(() -> setElevatorVoltage(0));
   }
 
   @Override

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.*;
 
 import com.ctre.phoenix6.HootAutoReplay;
@@ -42,6 +43,8 @@ public class Robot extends CommandRobot {
   public void configureBindings() {
     joystick.rightTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(2)));
     joystick.leftTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(-2)));
+
+    joystick.y().whileTrue(elevator.goTo(0.2));
 
     test()
         .whileTrue(
