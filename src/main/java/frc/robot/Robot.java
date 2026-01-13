@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -18,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
+import frc.lib.Test;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
 
 @Logged
@@ -46,6 +49,8 @@ public class Robot extends CommandRobot {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController joystick = new CommandXboxController(0);
+
+  @Logged private final Elevator elevator = new Elevator();
 
   public Robot() {
     super(0.02);
@@ -77,6 +82,11 @@ public class Robot extends CommandRobot {
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+    joystick.y().whileTrue(elevator.goTo(0.2));
+
+    test()
+        .whileTrue(
+            Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
   }
 
   @Override
