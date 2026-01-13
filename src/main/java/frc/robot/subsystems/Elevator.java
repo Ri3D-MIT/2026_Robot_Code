@@ -46,17 +46,16 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   private final double kS = 0;
   private final double kV = 0.1;
   private final double kA = 0;
-  private final double kG = 1;
+  private final double kG = 3;
 
   private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG, kV, kA);
 
   // TODO gear ratio and mech ratio
 
-  // Talon FX PID
   private final double kP = 0;
   private final double kI = 0;
   private final double kD = 0;
-  private final int kTolerance = 10;
+  private final double kTolerance = Inches.of(0.3).in(Meters);
 
   private final LinearVelocity MAX_SPEED = MetersPerSecond.of(1);
   private final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(1);
@@ -74,7 +73,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   private final Distance DRUM_RADIUS = Inches.of(0.25).times(22 / (2 * Math.PI));
 
-  private final Mass MASS = Pounds.of(10);
+  private final Mass MASS = Pounds.of(9);
 
   private final ElevatorSim elevatorSim;
 
@@ -157,13 +156,9 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   public Test goToTest(Distance height) {
     Command testCommand =
-        goTo(height.in(Meters))
-            .until(pid::atGoal)
-            .withTimeout(8)
-            .andThen(runOnce(() -> System.out.println("height: " + position())))
-            .withName("elevator test");
+        goTo(height.in(Meters)).until(pid::atGoal).withTimeout(7).withName("elevator test");
     EqualityAssertion atGoal =
-        Assertion.eAssert("elevator height", () -> height.in(Meters), this::position);
+        Assertion.eAssert("elevator height", () -> height.in(Meters), this::position, kTolerance);
     return new Test(testCommand, Set.of(atGoal));
   }
 
