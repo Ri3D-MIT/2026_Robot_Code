@@ -64,7 +64,7 @@ public class FaultLoggerTest {
         base.getSubTable("Total Faults").getStringArrayTopic("errors").subscribe(new String[10]);
 
     FaultLogger.update();
-    FaultLogger.register(() -> true, "Recurring Test", "Idk", FaultType.ERROR);
+    FaultLogger.register(() -> true, "Recurring Test", "test", FaultType.ERROR);
     FaultLogger.update();
     FaultLogger.update();
 
