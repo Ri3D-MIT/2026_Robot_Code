@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.*;
 
 import com.ctre.phoenix6.HootAutoReplay;

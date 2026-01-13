@@ -49,12 +49,11 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   private final double kS = 0;
   private final double kV = 0.1;
   private final double kA = 0;
-  private final double kG_UP = 0.05;
-  private final double kG_DOWN = -5;
+  private final double kG = 0;
+  private final double kG_LIFT = -5;
 
-  @Logged
-  private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG_UP, kV, kA);
-  private final ElevatorFeedforward ffLift = new ElevatorFeedforward(kS, kG_DOWN, kV, kA);
+  @Logged private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG, kV, kA);
+  private final ElevatorFeedforward ffLift = new ElevatorFeedforward(kS, kG_LIFT, kV, kA);
 
   // TODO gear ratio and mech ratio
 
@@ -99,7 +98,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     // TODO check!!
     config.Feedback.SensorToMechanismRatio = 20 / (DRUM_RADIUS.in(Meters) * 2 * Math.PI * 2);
 
-    leader.setPosition(0); 
+    leader.setPosition(0);
 
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
