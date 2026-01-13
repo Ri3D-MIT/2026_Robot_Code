@@ -47,7 +47,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   // Talon FX Feedforward
   private final double kS = 0;
-  private final double kV = 0.1;
+  private final double kV = 0.3;
   private final double kA = 0;
   private final double kG = 0;
   private final double kG_LIFT = -5;
@@ -95,7 +95,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.Feedback.RotorToSensorRatio = 1;
-    
+
     // TODO check - encoding linear conversion elsewhere to satisfy CTRE firm
     config.Feedback.SensorToMechanismRatio = 20;
     leader.setPosition(0);
@@ -150,7 +150,6 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   /** velocity meters per sec (theoretically) */
-
   public double velocity() {
     return Robot.isReal()
         ? drumRpsToMetersPerSecond(leader.getVelocity().getValueAsDouble())

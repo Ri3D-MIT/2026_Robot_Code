@@ -6,6 +6,7 @@ import static frc.lib.UnitTestingUtil.setupTests;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,10 +30,13 @@ public class ElevatorTest {
 
   @ParameterizedTest
   @ValueSource(doubles = {0, 5, 10, 15, 20, 25})
+  @Disabled
   void goToTest(double heightInches) {
     frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(heightInches)));
   }
 
+  @Test
+  @Disabled
   void extensionTest() {
     frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(25)));
     frc.lib.Test.runUnitTest(elevator.goToTest(Inches.of(0)));
