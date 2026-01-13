@@ -11,7 +11,6 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
@@ -40,9 +39,6 @@ public class Robot extends CommandRobot {
   }
 
   public void configureBindings() {
-    joystick.rightTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(2)));
-    joystick.leftTrigger().whileTrue(Commands.run(() -> elevator.setElevatorVoltage(-2)));
-
     joystick.y().whileTrue(elevator.goTo(0.2));
 
     test()
