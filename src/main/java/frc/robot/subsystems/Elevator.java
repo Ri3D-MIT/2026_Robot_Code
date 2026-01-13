@@ -52,6 +52,8 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   private final double kG = 0;
   private final double kG_LIFT = -5;
 
+  // kG = [m•g•r]/V
+
   @Logged private final ElevatorFeedforward ff = new ElevatorFeedforward(kS, kG, kV, kA);
   private final ElevatorFeedforward ffLift = new ElevatorFeedforward(kS, kG_LIFT, kV, kA);
 
@@ -75,9 +77,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   // TODO set constants
   private final Distance MAX_EXTENSION = Meters.of(0.444);
-
   private final Distance DRUM_RADIUS = Inches.of(0.25).times(22 / (2 * Math.PI));
-
   private final Mass MASS = Pounds.of(9);
 
   private final ElevatorSim elevatorSim;
@@ -95,9 +95,9 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.Feedback.RotorToSensorRatio = 1;
-    // TODO check!!
-    config.Feedback.SensorToMechanismRatio = 20 / (DRUM_RADIUS.in(Meters) * 2 * Math.PI * 2);
-
+    
+    // TODO check - encoding linear conversion elsewhere to satisfy CTRE firm
+    config.Feedback.SensorToMechanismRatio = 20;
     leader.setPosition(0);
 
     leader.getConfigurator().apply(config);
@@ -128,6 +128,14 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
         .onTrue(stop());
   }
 
+  private double drumRotationsToMeters(double rotations) {
+    return rotations * 2.0 * Math.PI * DRUM_RADIUS.in(Meters);
+  }
+
+  private double drumRpsToMetersPerSecond(double rps) {
+    return rps * 2.0 * Math.PI * DRUM_RADIUS.in(Meters);
+  }
+
   public void setElevatorVoltage(double voltage) {
     leader.setVoltage(voltage);
     elevatorSim.setInputVoltage(voltage);
@@ -137,15 +145,15 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   @Logged
   public double position() {
     return Robot.isReal()
-        ? leader.getPosition().getValueAsDouble()
+        ? drumRotationsToMeters(leader.getPosition().getValueAsDouble())
         : elevatorSim.getPositionMeters();
   }
 
   /** velocity meters per sec (theoretically) */
+
   public double velocity() {
-    // TODO what units will this be in...?
     return Robot.isReal()
-        ? leader.getVelocity().getValueAsDouble()
+        ? drumRpsToMetersPerSecond(leader.getVelocity().getValueAsDouble())
         : elevatorSim.getVelocityMetersPerSecond();
   }
 
@@ -153,7 +161,8 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     var lastState = pid.getSetpoint();
     double pidVoltage = pid.calculate(position(), Double.isNaN(position) ? position() : position);
     var nextState = pid.getSetpoint();
-    double ffVoltage = ff.calculateWithVelocities(lastState.velocity, nextState.velocity);
+    // double ffVoltage = ff.calculateWithVelocities(lastState.velocity, nextState.velocity);
+    double ffVoltage = ffControl.calculateWithVelocities(lastState.velocity, nextState.velocity);
 
     setElevatorVoltage(pidVoltage + ffVoltage);
   }
