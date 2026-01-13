@@ -41,14 +41,6 @@ public class Elevator extends SubsystemBase {
 
   private final PIDController pid = new PIDController(kP, kI, kD);
 
-  // Elevator limit switches
-  private DigitalInput minLimitSwitch;
-  private DigitalInput maxLimitSwitch;
-
-  // Booleans
-  private boolean reachedMaxHeight = false;
-  private boolean reachedMinHeight = false;
-
   public Elevator() {
     // Setting up motors (actuators) for moving the elevator
     elevatorLeader = new TalonFX(ELEVATOR_FOLLOWER);
