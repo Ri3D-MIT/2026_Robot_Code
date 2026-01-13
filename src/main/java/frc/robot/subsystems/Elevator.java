@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -118,11 +117,11 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
             MAX_EXTENSION.in(Meters),
             true,
             0);
-    
+
     setDefaultCommand(stop());
 
     new Trigger(() -> (position() <= kTolerance) || (position() >= MAX_EXTENSION.in(Meters)))
-      .onTrue(stop());
+        .onTrue(stop());
   }
 
   public void setElevatorVoltage(double voltage) {
