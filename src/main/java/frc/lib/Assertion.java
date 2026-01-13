@@ -59,6 +59,8 @@ public sealed interface Assertion {
     @Override
     public void apply(boolean unitTest) {
       if (unitTest) {
+        System.out.println(
+            "expected: " + expected.getAsDouble() + ", real: " + actual.getAsDouble());
         assertEquals(expected.getAsDouble(), actual.getAsDouble(), delta, faultName);
       } else {
         reportEquals(faultName, expected.getAsDouble(), actual.getAsDouble(), delta);

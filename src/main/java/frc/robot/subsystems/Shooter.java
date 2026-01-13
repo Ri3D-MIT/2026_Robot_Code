@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static frc.robot.Ports.Shooter.*;
-
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -14,21 +14,33 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.Assertion;
+import frc.lib.Assertion.EqualityAssertion;
 import frc.lib.FaultLogger;
+import frc.lib.Test;
+import frc.robot.Robot;
+import java.util.Set;
+import java.util.function.DoubleSupplier;
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase implements AutoCloseable {
   private final int kShooterCurrentLimit = 30;
 
   private final TalonFX topMotor;
   private final TalonFX bottomMotor;
 
-  private final double kS = 0;
-  private final double kV = 0;
+  private final FlywheelSim flywheelSim;
+
+  private final double kS = 0.02;
+  private final double kV = 0.02;
   private final double kA = 0;
 
-  private final double kP = 0;
+  private final double kP = 0.1;
   private final double kD = 0;
 
   private final SimpleMotorFeedforward ff = new SimpleMotorFeedforward(kS, kV, kA);
@@ -40,18 +52,26 @@ public class Shooter extends SubsystemBase {
   private final double TOLERANCE = 10;
 
   /** max flywheel speed, rads per sec */
-  private final double MAX_SPEED = 100;
+  private final double MAX_SPEED = 300;
+
+  // TODO real
+  private final MomentOfInertia MOI = KilogramSquareMeters.of(0.01);
 
   public Shooter() {
     this.topMotor = new TalonFX(TOP_LEADER);
     this.bottomMotor = new TalonFX(BOTTOM_FOLLOWER);
+
+    this.flywheelSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                DCMotor.getKrakenX60(2), MOI.in(KilogramSquareMeters), 1),
+            DCMotor.getKrakenX60(2));
 
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // TODO gear ratio?
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     topMotor.getConfigurator().apply(config);
@@ -72,16 +92,25 @@ public class Shooter extends SubsystemBase {
 
   public void setShooterVoltage(double voltage) {
     topMotor.setVoltage(voltage);
+    flywheelSim.setInputVoltage(voltage);
+  }
+
+  /** current flywheel vel in radians per second */
+  public double velocity() {
+    return Robot.isReal()
+        ? topMotor.getVelocity().getValue().in(RadiansPerSecond)
+        : flywheelSim.getAngularVelocityRadPerSec();
   }
 
   /** updates velocity goal, radians per second */
   public void updateGoal(double velocity) {
     double goal = Double.isNaN(velocity) ? 0 : MathUtil.clamp(velocity, -MAX_SPEED, MAX_SPEED);
     // TODO make sure units check out
-    double current_velocity = topMotor.getVelocity().getValueAsDouble();
-
-    setShooterVoltage(
-        fb.calculate(current_velocity) + ff.calculateWithVelocities(current_velocity, goal));
+    double current_velocity = velocity();
+    double voltage =
+        fb.calculate(current_velocity, velocity)
+            + ff.calculateWithVelocities(current_velocity, goal);
+    setShooterVoltage(voltage);
   }
 
   public Command runShooter(DoubleSupplier velocity) {
@@ -90,5 +119,27 @@ public class Shooter extends SubsystemBase {
 
   public Command runShooter(double velocity) {
     return runShooter(() -> velocity);
+  }
+
+  public Test goToTest(double velocity) {
+    Command testCommand =
+        runShooter(velocity)
+            .until(fb::atSetpoint)
+            .withTimeout(10)
+            .withName("Shooter Test: go to " + velocity + " radians per sec");
+    EqualityAssertion atGoal =
+        Assertion.eAssert("flywheel speed", () -> velocity, this::velocity, TOLERANCE);
+    return new Test(testCommand, Set.of(atGoal));
+  }
+
+  @Override
+  public void periodic() {
+    flywheelSim.update(0.02);
+  }
+
+  @Override
+  public void close() throws Exception {
+    topMotor.close();
+    bottomMotor.close();
   }
 }
