@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.swerve.SwerveDrive;
 
 public class RobotContainer {
@@ -39,6 +40,7 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
+  public final Elevator elevator = new Elevator();
 
   public RobotContainer() {
     configureBindings();
