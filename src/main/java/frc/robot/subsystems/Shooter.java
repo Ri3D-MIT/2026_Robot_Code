@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -52,7 +53,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final double TOLERANCE = 10;
 
   /** max flywheel speed, rads per sec */
-  private final double MAX_SPEED = 300;
+  private final double MAX_SPEED = 500;
+
+  private final double SHOOT_SPEED = 400;
 
   // TODO real
   private final MomentOfInertia MOI = KilogramSquareMeters.of(0.01);
@@ -83,6 +86,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     FaultLogger.register(bottomMotor);
 
     fb.setTolerance(TOLERANCE);
+
+    setDefaultCommand(runShooter(200));
   }
 
   public void stopMotors() {
@@ -96,6 +101,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   /** current flywheel vel in radians per second */
+  @Logged
   public double velocity() {
     return Robot.isReal()
         ? topMotor.getVelocity().getValue().in(RadiansPerSecond)
@@ -114,11 +120,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public Command runShooter(DoubleSupplier velocity) {
-    return run(() -> updateGoal(velocity.getAsDouble())).finallyDo(() -> setShooterVoltage(0));
+    return run(() -> updateGoal(velocity.getAsDouble()));
   }
 
   public Command runShooter(double velocity) {
     return runShooter(() -> velocity);
+  }
+
+  public Command shoot() {
+    return runShooter(SHOOT_SPEED);
   }
 
   public Test goToTest(double velocity) {

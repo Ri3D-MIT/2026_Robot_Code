@@ -14,6 +14,8 @@ public class Feeder extends SubsystemBase {
   private final TalonFX feederMotor;
   private final TalonFXConfiguration feederConfiguration;
 
+  private final double FEED_VOLTAGE = 3;
+
   private int kFeederCurrentLimit = 15;
 
   public Feeder() {
@@ -38,10 +40,10 @@ public class Feeder extends SubsystemBase {
   }
 
   public void setVoltageFeeder(double voltage) {
-    feederMotor.setVoltage(voltage);
+    feederMotor.setVoltage(FEED_VOLTAGE);
   }
 
-  public Command runFeeder(double voltage) {
-    return this.runEnd(() -> setVoltageFeeder(voltage), () -> stopFeeder());
+  public Command feed() {
+    return this.runEnd(() -> setVoltageFeeder(3), this::stopFeeder);
   }
 }
