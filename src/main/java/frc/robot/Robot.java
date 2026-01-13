@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.swerve.SwerveDrive;
+import frc.robot.subsystems.SwerveDrive;
 
 @Logged
 public class Robot extends CommandRobot {
