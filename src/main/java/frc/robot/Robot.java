@@ -10,6 +10,7 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
 import frc.robot.subsystems.Intake;
@@ -19,6 +20,7 @@ public class Robot extends CommandRobot {
   /* log and replay timestamp and joystick data */
   private final HootAutoReplay m_timeAndJoystickReplay =
       new HootAutoReplay().withTimestampReplay().withJoystickReplay();
+  private final CommandXboxController joystick = new CommandXboxController(0);
 
   @Logged private final Intake intake = new Intake();
 
@@ -33,7 +35,12 @@ public class Robot extends CommandRobot {
     Epilogue.bind(this);
   }
 
-  public void configureBindings() {}
+  public void configureBindings() {
+    joystick.x().onTrue(intake.ground());
+    joystick.b().onTrue(intake.stow());
+
+    joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
+  }
 
   @Override
   public void robotPeriodic() {
