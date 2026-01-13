@@ -71,7 +71,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     config.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     topMotor.getConfigurator().apply(config);
