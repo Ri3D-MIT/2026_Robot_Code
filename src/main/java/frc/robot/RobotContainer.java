@@ -40,7 +40,6 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   public final SwerveDrive drivetrain = TunerConstants.createDrivetrain();
-  public final Intake intake = new Intake();
 
   public RobotContainer() {
     configureBindings();
