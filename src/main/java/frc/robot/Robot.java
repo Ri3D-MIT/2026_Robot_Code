@@ -55,6 +55,8 @@ public class Robot extends CommandRobot {
 
   @Logged public final Feeder feeder = new Feeder();
 
+  @Logged private final Intake intake = new Intake();
+
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   // @Logged private final Elevator elevator = new Elevator();
@@ -88,6 +90,11 @@ public class Robot extends CommandRobot {
     disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+    joystick.x().onTrue(intake.ground());
+    joystick.b().onTrue(intake.stow());
+
+    joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
+
     drivetrain.registerTelemetry(logger::telemeterize);
     joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
     joystick.rightTrigger().whileTrue(feeder.feed());
@@ -97,12 +104,6 @@ public class Robot extends CommandRobot {
     // test()
     //     .whileTrue(
     //         Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
-  }
-  public void configureBindings() {
-    joystick.x().onTrue(intake.ground());
-    joystick.b().onTrue(intake.stow());
-
-    joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
   }
 
   @Override

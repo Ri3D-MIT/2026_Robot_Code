@@ -2,8 +2,6 @@ package frc.robot;
 
 import static java.util.Map.entry;
 
-import static java.util.Map.entry;
-
 import java.util.Map;
 
 public final class Ports {
@@ -13,7 +11,9 @@ public final class Ports {
           entry(Shooter.BOTTOM_FOLLOWER, "bottom shooter"),
           entry(Feeder.FEEDER, "feeder"),
           entry(Elevator.ELEVATOR_LEADER, "elevator left"),
-          entry(Elevator.ELEVATOR_FOLLOWER, "elevator right"));
+          entry(Elevator.ELEVATOR_FOLLOWER, "elevator right"),
+          entry(Intake.INTAKE_MOTOR, "intake motor"), 
+          entry(Intake.PIVOT_MOTOR, "pivot motor"));
 
   public static final class Shooter {
     public static final int BOTTOM_FOLLOWER = 31;
@@ -27,10 +27,7 @@ public final class Ports {
   public static final class Elevator {
     public static final int ELEVATOR_LEADER = 37;
     public static final int ELEVATOR_FOLLOWER = 38;
-  }
-  public static final Map<Integer, String> idToName =
-      Map.ofEntries(
-          entry(Intake.INTAKE_MOTOR, "intake motor"), entry(Intake.PIVOT_MOTOR, "pivot motor"));
+  } 
 
   public static final class Intake {
     public static final int INTAKE_MOTOR = 35;
