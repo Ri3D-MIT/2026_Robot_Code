@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
+import frc.robot.subsystems.Intake;
 import frc.lib.Test;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Elevator;
@@ -54,6 +55,8 @@ public class Robot extends CommandRobot {
 
   @Logged public final Feeder feeder = new Feeder();
 
+  @Logged private final Intake intake = new Intake();
+
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   // @Logged private final Elevator elevator = new Elevator();
@@ -86,6 +89,11 @@ public class Robot extends CommandRobot {
     final var idle = new SwerveRequest.Idle();
     disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    joystick.x().onTrue(intake.ground());
+    joystick.b().onTrue(intake.stow());
+
+    joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
     joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
