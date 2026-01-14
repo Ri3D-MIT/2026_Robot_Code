@@ -35,7 +35,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final TalonFX topMotor;
   private final TalonFX bottomMotor;
 
-  // private final FlywheelSim flywheelSim;
+  private final FlywheelSim flywheelSim;
 
   private final double kS = 0.02;
   private final double kV = 0.02;
@@ -56,6 +56,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final double MAX_SPEED = 500;
 
   private final double SHOOT_SPEED = 400;
+
+  private final double SHOOT_SPEED_VOLTAGE = 5;
 
   private final MomentOfInertia MOI = KilogramSquareMeters.of(0.01);
 
@@ -89,18 +91,18 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     // Create Flywheel simulation for shooter.
 
-    // this.flywheelSim =
-    //     new FlywheelSim(
-    //         LinearSystemId.createFlywheelSystem(
-    //             DCMotor.getKrakenX60(2), MOI.in(KilogramSquareMeters), 1),
-    //         DCMotor.getKrakenX60(2));
+    this.flywheelSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                DCMotor.getKrakenX60(2), MOI.in(KilogramSquareMeters), 1),
+            DCMotor.getKrakenX60(2));
 
     FaultLogger.register(topMotor);
     FaultLogger.register(bottomMotor);
 
     fb.setTolerance(TOLERANCE);
 
-    // setDefaultCommand(runShooter(200));
+    setDefaultCommand(runShooter(200));
   }
 
   public void stopMotors() {
@@ -110,59 +112,63 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public void setShooterVoltage(double voltage) {
     topMotor.setVoltage(voltage);
-    // flywheelSim.setInputVoltage(voltage);
+    bottomMotor.setVoltage(-voltage);
+  }
+
+  public void setFlywheelVoltage(double voltage) {
+    flywheelSim.setInputVoltage(voltage);
   }
 
   /** current flywheel vel in radians per second */
-  // @Logged
-  // public double velocity() {
-  //   return Robot.isReal()
-  //       ? topMotor.getVelocity().getValue().in(RadiansPerSecond)
-  //       : flywheelSim.getAngularVelocityRadPerSec();
-  // }
-
-  /** updates velocity goal, radians per second */
-  // public void updateGoal(double velocity) {
-  //   double goal = Double.isNaN(velocity) ? 0 : MathUtil.clamp(velocity, -MAX_SPEED, MAX_SPEED);
-  //   // TODO make sure units check out
-  //   double current_velocity = velocity();
-  //   double voltage =
-  //       fb.calculate(current_velocity, velocity)
-  //           + ff.calculateWithVelocities(current_velocity, goal);
-  //   setShooterVoltage(voltage);
-  // }
-
-  // public Command runShooter(DoubleSupplier velocity) {
-  //   return run(() -> updateGoal(velocity.getAsDouble()));
-  // }
-
-  // public Command runShooter(double velocity) {
-  //   return runShooter(() -> velocity);
-  // }
-
-  // public Command shoot() {
-  //   return runShooter(SHOOT_SPEED);
-  // }
-
-  public Command shoot() {
-    return this.runEnd(() -> setShooterVoltage(SHOOT_SPEED), () -> stopMotors());
+  @Logged
+  public double velocity() {
+    return Robot.isReal()
+        ? topMotor.getVelocity().getValue().in(RadiansPerSecond)
+        : flywheelSim.getAngularVelocityRadPerSec();
   }
 
-  // public Test goToTest(double velocity) {
-  //   Command testCommand =
-  //       runShooter(velocity)
-  //           .until(fb::atSetpoint)
-  //           .withTimeout(10)
-  //           .withName("Shooter Test: go to " + velocity + " radians per sec");
-  //   EqualityAssertion atGoal =
-  //       Assertion.eAssert("flywheel speed", () -> velocity, this::velocity, TOLERANCE);
-  //   return new Test(testCommand, Set.of(atGoal));
-  // }
+  /** updates velocity goal, radians per second */
+  public void updateGoal(double velocity) {
+    double goal = Double.isNaN(velocity) ? 0 : MathUtil.clamp(velocity, -MAX_SPEED, MAX_SPEED);
+    // TODO make sure units check out
+    double current_velocity = velocity();
+    double voltage =
+        fb.calculate(current_velocity, velocity)
+            + ff.calculateWithVelocities(current_velocity, goal);
+    setShooterVoltage(voltage);
+  }
 
-  // @Override
-  // public void periodic() {
-  //   flywheelSim.update(0.02);
-  // }
+  public Command runShooter(DoubleSupplier velocity) {
+    return run(() -> updateGoal(velocity.getAsDouble()));
+  }
+
+  public Command runShooter(double velocity) {
+    return runShooter(() -> velocity);
+  }
+
+  public Command shootFlywheel() {
+    return runShooter(SHOOT_SPEED);
+  }
+
+  public Command shootVoltage() {
+    return this.runEnd(() -> setShooterVoltage(SHOOT_SPEED_VOLTAGE), () -> stopMotors());
+  }
+
+  public Test goToTest(double velocity) {
+    Command testCommand =
+        runShooter(velocity)
+            .until(fb::atSetpoint)
+            .withTimeout(10)
+            .withName("Shooter Test: go to " + velocity + " radians per sec");
+    EqualityAssertion atGoal =
+        Assertion.eAssert("flywheel speed", () -> velocity, this::velocity, TOLERANCE);
+    return new Test(testCommand, Set.of(atGoal));
+  }
+
+  @Override
+  public void periodic() {
+    flywheelSim.update(0.02);
+  }
 
   @Override
   public void close() throws Exception {

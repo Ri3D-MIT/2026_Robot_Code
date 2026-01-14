@@ -14,8 +14,8 @@ public final class Ports {
           entry(Elevator.ELEVATOR_FOLLOWER, "elevator right"));
 
   public static final class Shooter {
-    public static final int TOP_LEADER = 31;
-    public static final int BOTTOM_FOLLOWER = 32;
+    public static final int BOTTOM_FOLLOWER = 31;
+    public static final int TOP_LEADER = 32;
   }
 
   public static final class Feeder {
