@@ -57,19 +57,26 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   private final double SHOOT_SPEED = 400;
 
-  // TODO real
   private final MomentOfInertia MOI = KilogramSquareMeters.of(0.01);
 
   public Shooter() {
+    /*
+     * The shooter launches any fuel stored on the robot's hopper.
+     *
+     * The shooter is powered by two Kraken X60 motors: one on top and one on the bottom.
+     * These Kraken X60 motors are powered by a Talon FX motor controller.
+     */
+
+    // Creates TalonFX objects corresponding to each motor.
+    // All CAN IDs are saved in Ports.java
     this.topMotor = new TalonFX(TOP_LEADER);
     this.bottomMotor = new TalonFX(BOTTOM_FOLLOWER);
 
-    this.flywheelSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
-                DCMotor.getKrakenX60(2), MOI.in(KilogramSquareMeters), 1),
-            DCMotor.getKrakenX60(2));
+    bottomMotor.setControl(new Follower(TOP_LEADER, MotorAlignmentValue.Opposed));
 
+    // Create configuration object for BOTH shooter motors.
+    // We bring down the current limit to prevent overloading our electrical circuitry
+    // We also set the neutral mode to coast (the shooter motors spool fast :O)
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = kShooterCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -80,7 +87,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     topMotor.getConfigurator().apply(config);
     bottomMotor.getConfigurator().apply(config);
 
-    bottomMotor.setControl(new Follower(TOP_LEADER, MotorAlignmentValue.Opposed));
+    // Create Flywheel simulation for shooter.
+    this.flywheelSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                DCMotor.getKrakenX60(2), MOI.in(KilogramSquareMeters), 1),
+            DCMotor.getKrakenX60(2));
 
     FaultLogger.register(topMotor);
     FaultLogger.register(bottomMotor);
