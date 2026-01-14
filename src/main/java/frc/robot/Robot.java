@@ -31,7 +31,7 @@ public class Robot extends CommandRobot {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-  @Logged private final Elevator elevator = new Elevator();
+  // @Logged private final Elevator elevator = new Elevator();
 
   public Robot() {
     super(0.02);
@@ -48,11 +48,11 @@ public class Robot extends CommandRobot {
     joystick.leftTrigger().whileTrue(shooter.shoot());
     joystick.rightTrigger().whileTrue(feeder.feed());
 
-    joystick.y().whileTrue(elevator.goTo(0.2));
+    // joystick.y().whileTrue(elevator.goTo(0.2));
 
-    test()
-        .whileTrue(
-            Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
+    // test()
+    //     .whileTrue(
+    //         Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
   }
 
   @Override
