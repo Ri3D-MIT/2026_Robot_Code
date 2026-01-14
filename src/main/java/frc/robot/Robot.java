@@ -13,7 +13,7 @@ import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.*;
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +23,8 @@ import frc.lib.Test;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Shooter;
 
 @Logged
 public class Robot extends CommandRobot {
@@ -48,9 +50,13 @@ public class Robot extends CommandRobot {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  @Logged private final Shooter shooter = new Shooter();
+
+  @Logged public final Feeder feeder = new Feeder();
+
   private final CommandXboxController joystick = new CommandXboxController(0);
 
-  @Logged private final Elevator elevator = new Elevator();
+  // @Logged private final Elevator elevator = new Elevator();
 
   public Robot() {
     super(0.02);
@@ -60,7 +66,7 @@ public class Robot extends CommandRobot {
 
   public void configureGameBehavior() {
     addPeriodic(FaultLogger::update, 2);
-    Epilogue.bind(this);
+    // Epilogue.bind(this);
   }
 
   public void configureBindings() {
@@ -82,11 +88,14 @@ public class Robot extends CommandRobot {
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    joystick.y().whileTrue(elevator.goTo(0.2));
+    joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
+    joystick.rightTrigger().whileTrue(feeder.feed());
 
-    test()
-        .whileTrue(
-            Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
+    // joystick.y().whileTrue(elevator.goTo(0.2));
+
+    // test()
+    //     .whileTrue(
+    //         Test.toCommand(elevator.goToTest(Inches.of(10)), elevator.goToTest(Inches.of(0))));
   }
 
   @Override
