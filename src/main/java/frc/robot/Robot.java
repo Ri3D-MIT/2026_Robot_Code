@@ -13,7 +13,7 @@ import static edu.wpi.first.wpilibj2.command.button.RobotModeTriggers.*;
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.epilogue.Epilogue;
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -66,7 +66,7 @@ public class Robot extends CommandRobot {
 
   public void configureGameBehavior() {
     addPeriodic(FaultLogger::update, 2);
-    Epilogue.bind(this);
+    // Epilogue.bind(this);
   }
 
   public void configureBindings() {
@@ -88,7 +88,7 @@ public class Robot extends CommandRobot {
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    joystick.leftTrigger().whileTrue(shooter.shoot());
+    joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
     joystick.rightTrigger().whileTrue(feeder.feed());
 
     // joystick.y().whileTrue(elevator.goTo(0.2));

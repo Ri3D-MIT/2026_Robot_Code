@@ -37,11 +37,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   private final FlywheelSim flywheelSim;
 
-  private final double kS = 0.02;
-  private final double kV = 0.02;
+  private final double kS = 0;
+  private final double kV = 0;
   private final double kA = 0;
 
-  private final double kP = 0.1;
+  private final double kP = 0.025;
   private final double kD = 0;
 
   private final SimpleMotorFeedforward ff = new SimpleMotorFeedforward(kS, kV, kA);
@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final double TOLERANCE = 10;
 
   /** max flywheel speed, rads per sec */
-  private final double MAX_SPEED = 500;
+  private final double MAX_SPEED = 1000;
 
   private final double SHOOT_SPEED = 400;
 
@@ -102,7 +102,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     fb.setTolerance(TOLERANCE);
 
-    setDefaultCommand(runShooter(200));
+    setDefaultCommand(runShooter(400));
   }
 
   public void stopMotors() {
@@ -112,7 +112,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public void setShooterVoltage(double voltage) {
     topMotor.setVoltage(voltage);
-    bottomMotor.setVoltage(-voltage);
+    bottomMotor.setVoltage(-voltage * 1.5);
   }
 
   public void setFlywheelVoltage(double voltage) {
@@ -135,6 +135,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     double voltage =
         fb.calculate(current_velocity, velocity)
             + ff.calculateWithVelocities(current_velocity, goal);
+    System.out.println(voltage);
     setShooterVoltage(voltage);
   }
 

@@ -17,7 +17,7 @@ public class Feeder extends SubsystemBase {
 
   private final double FEED_VOLTAGE = 3;
 
-  private int kFeederCurrentLimit = 15;
+  private int kFeederCurrentLimit = 30;
 
   public Feeder() {
     feederMotor = new TalonFX(FEEDER);
@@ -26,7 +26,7 @@ public class Feeder extends SubsystemBase {
     feederConfiguration.CurrentLimits.SupplyCurrentLimit = kFeederCurrentLimit;
     feederConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    feederConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     feederConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     feederConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
