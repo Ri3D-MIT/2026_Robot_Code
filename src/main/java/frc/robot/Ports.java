@@ -12,7 +12,7 @@ public final class Ports {
           entry(Feeder.FEEDER, "feeder"),
           entry(Elevator.ELEVATOR_LEADER, "elevator left"),
           entry(Elevator.ELEVATOR_FOLLOWER, "elevator right"),
-          entry(Intake.INTAKE_MOTOR, "intake motor"), 
+          entry(Intake.INTAKE_MOTOR, "intake motor"),
           entry(Intake.PIVOT_MOTOR, "pivot motor"));
 
   public static final class Shooter {
@@ -27,7 +27,7 @@ public final class Ports {
   public static final class Elevator {
     public static final int ELEVATOR_LEADER = 37;
     public static final int ELEVATOR_FOLLOWER = 38;
-  } 
+  }
 
   public static final class Intake {
     public static final int INTAKE_MOTOR = 35;

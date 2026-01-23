@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -19,13 +18,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.CommandRobot;
 import frc.lib.FaultLogger;
-import frc.robot.subsystems.Intake;
-import frc.lib.Test;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveDrive;
 
 @Logged
 public class Robot extends CommandRobot {
@@ -96,7 +93,7 @@ public class Robot extends CommandRobot {
     joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
+    joystick.leftTrigger().whileTrue(shooter.runShooter(() -> 10));
     joystick.rightTrigger().whileTrue(feeder.feed());
 
     // joystick.y().whileTrue(elevator.goTo(0.2));
