@@ -122,7 +122,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
             true,
             0);
 
-    setDefaultCommand(stop());
+    setDefaultCommand(stop().andThen(idle()));
 
     new Trigger(() -> (position() <= kTolerance) || (position() >= MAX_EXTENSION.in(Meters)))
         .onTrue(stop());
@@ -188,7 +188,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   }
 
   public Command stop() {
-    return Commands.runOnce(() -> setElevatorVoltage(0)).andThen(idle());
+    return Commands.runOnce(() -> setElevatorVoltage(0));
   }
 
   public Command lift() {
