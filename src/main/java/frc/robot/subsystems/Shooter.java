@@ -6,12 +6,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static frc.robot.Ports.Shooter.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 // import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
@@ -80,8 +78,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.topMotor = new TalonFX(TOP_LEADER);
     this.bottomMotor = new TalonFX(BOTTOM_FOLLOWER);
 
-    bottomMotor.setControl(new Follower(TOP_LEADER, MotorAlignmentValue.Opposed));
-
     // Create configuration object for BOTH shooter motors.
     // We bring down the current limit to prevent overloading our electrical circuitry
     // We also set the neutral mode to coast (the shooter motors spool fast :O)
@@ -99,7 +95,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     bottomMotor.getConfigurator().apply(config);
 
     // Create Flywheel simulation for shooter.
-
     this.flywheelSim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
