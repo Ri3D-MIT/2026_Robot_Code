@@ -79,19 +79,19 @@ public class Robot extends CommandRobot {
             () ->
                 drive
                     .withVelocityX(
-                        -joystick.getLeftY() * 0.5) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * 0.5) // Drive left with negative X (left)
+                        -joystick.getLeftY() * 0.25) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * 0.25) // Drive left with negative X (left)
                     .withRotationalRate(
                         -joystick.getRightX()
-                            * 0.5) // Drive counterclockwise with negative X (left)
+                            * 0.25) // Drive counterclockwise with negative X (left)
             ));
 
     final var idle = new SwerveRequest.Idle();
     disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    joystick.x().onTrue(intake.ground());
-    joystick.b().onTrue(intake.stow());
+    // joystick.x().onTrue(intake.ground());
+    // joystick.b().onTrue(intake.stow());
 
     joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
 

@@ -33,7 +33,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final int kShooterCurrentLimit = 30;
 
   private final TalonFX topMotor;
-  private final TalonFX bottomMotor;
+  // private final TalonFX bottomMotor;
 
   private final FlywheelSim flywheelSim;
 
@@ -72,9 +72,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     // Creates TalonFX objects corresponding to each motor.
     // All CAN IDs are saved in Ports.java
     this.topMotor = new TalonFX(TOP_LEADER);
-    this.bottomMotor = new TalonFX(BOTTOM_FOLLOWER);
+    // this.bottomMotor = new TalonFX(BOTTOM_FOLLOWER);
 
-    bottomMotor.setControl(new Follower(TOP_LEADER, MotorAlignmentValue.Opposed));
+    // bottomMotor.setControl(new Follower(TOP_LEADER, MotorAlignmentValue.Opposed));
 
     // Create configuration object for BOTH shooter motors.
     // We bring down the current limit to prevent overloading our electrical circuitry
@@ -87,7 +87,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     topMotor.getConfigurator().apply(config);
-    bottomMotor.getConfigurator().apply(config);
+    // bottomMotor.getConfigurator().apply(config);
 
     // Create Flywheel simulation for shooter.
 
@@ -98,7 +98,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             DCMotor.getKrakenX60(2));
 
     FaultLogger.register(topMotor);
-    FaultLogger.register(bottomMotor);
 
     fb.setTolerance(TOLERANCE);
 
@@ -107,12 +106,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public void stopMotors() {
     topMotor.stopMotor();
-    bottomMotor.stopMotor();
+    // bottomMotor.stopMotor();
   }
 
   public void setShooterVoltage(double voltage) {
     topMotor.setVoltage(voltage);
-    bottomMotor.setVoltage(-voltage * 1.5);
+    // bottomMotor.setVoltage(-voltage * 1.5);
   }
 
   public void setFlywheelVoltage(double voltage) {
@@ -174,6 +173,5 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   @Override
   public void close() throws Exception {
     topMotor.close();
-    bottomMotor.close();
   }
 }
