@@ -59,7 +59,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   // TODO gear ratio and mech ratio
 
-  private final double kP = 0;
+  private final double kP = 2;
   private final double kI = 0;
   private final double kD = 0;
   private final double kTolerance = Inches.of(0.3).in(Meters);
@@ -78,7 +78,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
   // TODO set constants
   private final Distance MAX_EXTENSION = Meters.of(0.444);
   private final Distance DRUM_RADIUS = Inches.of(0.25).times(22 / (2 * Math.PI));
-  private final Mass MASS = Pounds.of(9);
+  private final Mass MASS = Pounds.of(5);
 
   private final ElevatorSim elevatorSim;
 
@@ -96,7 +96,6 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     config.Feedback.RotorToSensorRatio = 1;
 
-    // TODO check - encoding linear conversion elsewhere to satisfy CTRE firm
     config.Feedback.SensorToMechanismRatio = 20;
     leader.setPosition(0);
 
@@ -111,7 +110,6 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
     FaultLogger.register(leader);
     FaultLogger.register(follower);
 
-    // TODO double check gear ratio
     elevatorSim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(
@@ -181,10 +179,14 @@ public class Elevator extends SubsystemBase implements AutoCloseable {
 
   public Test goToTest(Distance height) {
     Command testCommand =
-        goTo(height.in(Meters)).until(pid::atGoal).withTimeout(7).withName("elevator test");
+        goTo(height.in(Meters)).until(pid::atGoal).withTimeout(7)
+        .andThen(Commands.runOnce(() -> System.out.println("exp: " + height.in(Meters) + "; real: " + this.position())))
+        .withName("elevator test");
     EqualityAssertion atGoal =
         Assertion.eAssert("elevator height", () -> height.in(Meters), this::position, kTolerance);
-    return new Test(testCommand, Set.of(atGoal));
+    EqualityAssertion stayingAtGoal =
+        Assertion.eAssert("elevator vel", () -> 0, this::velocity, 0.1);
+    return new Test(testCommand, Set.of(atGoal, stayingAtGoal));
   }
 
   public Command stop() {
