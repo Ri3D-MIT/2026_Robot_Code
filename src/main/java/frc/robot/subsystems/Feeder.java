@@ -46,6 +46,6 @@ public class Feeder extends SubsystemBase {
   }
 
   public Command feed() {
-    return this.runEnd(() -> setVoltageFeeder(3), this::stopFeeder);
+    return this.runEnd(() -> setVoltageFeeder(-30), this::stopFeeder);
   }
 }

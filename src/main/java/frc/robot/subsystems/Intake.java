@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase implements AutoCloseable {
     intakeConfig.CurrentLimits.SupplyCurrentLimit = kIntakeCurrentLimit;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Break;
+    intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     intakeMotor.getConfigurator().apply(intakeConfig);
 

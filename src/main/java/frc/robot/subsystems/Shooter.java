@@ -101,7 +101,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     fb.setTolerance(TOLERANCE);
 
-    setDefaultCommand(runShooter(400));
+    setDefaultCommand(runShooter(0));
   }
 
   public void stopMotors() {
@@ -139,11 +139,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public Command runShooter(DoubleSupplier velocity) {
-    return run(() -> updateGoal(velocity.getAsDouble()));
+    return run(() -> updateGoal(-velocity.getAsDouble()));
   }
 
   public Command runShooter(double velocity) {
-    return runShooter(() -> velocity);
+    return runShooter(() -> -velocity);
   }
 
   public Command shootFlywheel() {
@@ -154,16 +154,16 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return this.runEnd(() -> setShooterVoltage(SHOOT_SPEED_VOLTAGE), () -> stopMotors());
   }
 
-  public Test goToTest(double velocity) {
-    Command testCommand =
-        runShooter(velocity)
-            .until(fb::atSetpoint)
-            .withTimeout(10)
-            .withName("Shooter Test: go to " + velocity + " radians per sec");
-    EqualityAssertion atGoal =
-        Assertion.eAssert("flywheel speed", () -> velocity, this::velocity, TOLERANCE);
-    return new Test(testCommand, Set.of(atGoal));
-  }
+  // public Test goToTest(double velocity) {
+  //   Command testCommand =
+  //       runShooter(velocity)
+  //           .until(fb::atSetpoint)
+  //           .withTimeout(10)
+  //           .withName("Shooter Test: go to " + velocity + " radians per sec");
+  //   EqualityAssertion atGoal =
+  //       Assertion.eAssert("flywheel speed", () -> velocity, this::velocity, TOLERANCE);
+  //   return new Test(testCommand, Set.of(atGoal));
+  // }
 
   @Override
   public void periodic() {

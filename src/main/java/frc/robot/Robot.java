@@ -96,7 +96,7 @@ public class Robot extends CommandRobot {
     joystick.rightBumper().toggleOnTrue(intake.run(() -> intake.setIntakeVoltage(4)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    joystick.leftTrigger().whileTrue(shooter.runShooter(()->10));
+    joystick.leftTrigger().whileTrue(shooter.runShooter(()->750));
     joystick.rightTrigger().whileTrue(feeder.feed());
 
     // joystick.y().whileTrue(elevator.goTo(0.2));

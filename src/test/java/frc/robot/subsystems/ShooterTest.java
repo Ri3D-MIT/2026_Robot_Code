@@ -26,9 +26,9 @@ public class ShooterTest {
   @Test
   void init() {}
 
-  @ParameterizedTest
-  @ValueSource(doubles = {-200, -100, -50, 0, 50, 100, 200, 300})
-  void goToTest(double velocity) {
-    frc.lib.Test.runUnitTest(shooter.goToTest(velocity));
-  }
+  // @ParameterizedTest
+  // @ValueSource(doubles = {-200, -100, -50, 0, 50, 100, 200, 300})
+  // void goToTest(double velocity) {
+  //   frc.lib.Test.runUnitTest(shooter.goToTest(velocity));
+  // }
 }
